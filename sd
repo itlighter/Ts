@@ -163,7 +163,6 @@ local function getUpdateFunction()
 end
 
 local v_u_30 = getUpdateFunction()
-print("v_u_30 found:", v_u_30)
 
 local function startExpeditionLoop()
     while autoStartExpeditionEnabled do
