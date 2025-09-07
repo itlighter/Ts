@@ -5,6 +5,7 @@ local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local player = Players.LocalPlayer
 local PlayerGui = player.PlayerGui
 local CenterAlign = PlayerGui.ScreenGui.CenterAlign
+local LeftAlign = PlayerGui.ScreenGui.LeftAlign
 local Ranks = require(ReplicatedStorage.Modules.Ranks)
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 WindUI:SetTheme("Dark")
@@ -64,6 +65,7 @@ local pillAmount = 1
 local statAmount = 1
 local cooldowns = {}
 local selectedNPCs = {}
+local expeditionStates = {}
 
 Remotes.NPCCooldown.OnClientEvent:Connect(function(npc,cd)
     cooldowns[npc] = os.clock() + cd
@@ -164,6 +166,16 @@ end
 
 local v_u_30 = getUpdateFunction()
 
+local function updateBadge()
+    LeftAlign.Expeditions.New.Visible = false
+    for _, state in pairs(expeditionStates) do
+        if state then
+            LeftAlign.Expeditions.New.Visible = true
+            break
+        end
+    end
+end
+
 local function startExpeditionLoop()
     while autoStartExpeditionEnabled do
         local expeditions = Remotes.GetExpeditionsInfo:InvokeServer()
@@ -174,10 +186,12 @@ local function startExpeditionLoop()
                 local timeLeft = expeditions[layout]
 
                 if not timeLeft then
-                    local newTime = StartExpedition:InvokeServer(layout)
+                    local newTime = Remotes.StartExpedition:InvokeServer(layout)
                     if v_u_30 then
                         v_u_30(expeditionFrame, newTime)
                     end
+                    expeditionStates[layout] = false
+                    updateBadge()
                 end
             end
         end
@@ -195,11 +209,17 @@ local function claimExpeditionLoop()
                 local timeLeft = expeditions[layout]
 
                 if timeLeft and timeLeft <= 0 then
-                    ClaimExpedition:FireServer(layout)
-                    local newTime = StartExpedition:InvokeServer(layout)
+                    expeditionStates[layout] = true
+                    updateBadge()
+
+                    Remotes.ClaimExpedition:FireServer(layout)
+                    expeditionStates[layout] = false
+                    local newTime = Remotes.StartExpedition:InvokeServer(layout)
+
                     if v_u_30 then
                         v_u_30(expeditionFrame, newTime)
                     end
+                    updateBadge()
                 end
             end
         end
