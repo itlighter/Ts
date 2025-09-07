@@ -12,6 +12,7 @@ local Window = WindUI:CreateWindow({
     Title = "A Cultivation Game Script",
     Icon = "door-open",
     Author = "Pucuk",
+    Folder = "PucukHub",
     KeySystem = {
         Note = "Example Key System. With platoboost, etc.",
         API = {
