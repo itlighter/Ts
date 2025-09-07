@@ -182,7 +182,7 @@ local function startExpeditionLoop()
                 end
             end
         end
-        wait(1)
+        wait(5)
     end
 end
 
@@ -204,7 +204,7 @@ local function claimExpeditionLoop()
                 end
             end
         end
-        wait(1)
+        wait(5)
     end
 end
 
