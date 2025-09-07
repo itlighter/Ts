@@ -14,8 +14,7 @@ local Window = WindUI:CreateWindow({
     Author = "Pucuk",
     Folder = "PucukHub",
     KeySystem = {
-        Note = "Example Key System. With platoboost, etc.",
-        URL = "https://pandadevelopment.net/booster/cmf8xg4jv0808whrxwbd6xqfw",
+        Note = "Get Key for ACG PucukHub",
         API = {
             { 
                 Type = "pandadevelopment",
