@@ -12,16 +12,6 @@ local Window = WindUI:CreateWindow({
     Title = "A Cultivation Game Script",
     Icon = "door-open",
     Author = "Pucuk",
-    Folder = "PucukHub",
-    KeySystem = {
-        Note = "Get Key for ACG PucukHub",
-        API = {
-            { 
-                Type = "pandadevelopment",
-                ServiceId = "pucukhub",
-            },
-        },
-    },
 })
 Window:SetToggleKey(Enum.KeyCode.LeftControl)
 Window:EditOpenButton({
@@ -42,6 +32,11 @@ local Tab = Window:Tab({
     Icon = "house",
     Locked = false,
 })
+local expeditionTab = Window:Tab({
+    Title = "Main",
+    Icon = "compass",
+    Locked = false,
+})
 local miscTab = Window:Tab({
     Title = "Misc",
     Icon = "circle-ellipsis",
@@ -53,12 +48,16 @@ local currentBattle = nil
 local autoBattleEnabled = false
 local autoCultivateEnabled = false
 local autoBreakthroughEnabled = false
+local autoStartExpeditionEnabled = false
+local autoClaimExpeditionEnabled = false
 local skillToUse = 3
 
 local CultivateEvent = Remotes.Cultivate
 local BreakthroughEvent = Remotes.Breakthrough
 local ActivatePill = Remotes.ActivatePill
 local AddStat = Remotes.UsePoint
+local StartExpedition = Remotes.StartExpedition
+local ClaimExpedition = Remotes.ClaimExpedition
 local selectedPill = nil
 local selectedStat = nil
 local pillAmount = 1
@@ -149,6 +148,59 @@ local function breakthroughLoop()
             CultivateEvent:FireServer(false)
             BreakthroughEvent:FireServer(true)
         end
+    end
+end
+
+local function getUpdateFunction()
+    for _, f in ipairs(getgc(true)) do
+        if type(f) == "function" and islclosure(f) then
+            local info = debug.getinfo(f)
+            if info and info.numparams == 2 and tostring(info.source):find("Expeditions") then
+                return f
+            end
+        end
+    end
+end
+
+local v_u_30 = getUpdateFunction()
+print("v_u_30 found:", v_u_30)
+
+local function startExpeditionLoop()
+    while autoStartExpeditionEnabled do
+        local expeditions = Remotes.GetExpeditionsInfo:InvokeServer()
+
+        for _, expeditionFrame in pairs(CenterAlign.Expeditions.Frame.ScrollingFrame:GetChildren()) do
+            if expeditionFrame.Name == "Pattern" then
+                local layout = expeditionFrame.LayoutOrder
+                local timeLeft = expeditions[layout]
+
+                if not timeLeft then
+                    local newTime = StartExpedition:InvokeServer(layout)
+                    v_u_30(expeditionFrame, newTime)
+                end
+            end
+        end
+        wait(2)
+    end
+end
+
+local function claimExpeditionLoop()
+    while autoClaimExpeditionEnabled do
+        local expeditions = Remotes.GetExpeditionsInfo:InvokeServer()
+
+        for _, expeditionFrame in pairs(CenterAlign.Expeditions.Frame.ScrollingFrame:GetChildren()) do
+            if expeditionFrame.Name == "Pattern" then
+                local layout = expeditionFrame.LayoutOrder
+                local timeLeft = expeditions[layout]
+
+                if timeLeft and timeLeft <= 0 then
+                    ClaimExpedition:FireServer(layout)
+                    local newTime = StartExpedition:InvokeServer(layout)
+                    v_u_30(expeditionFrame, newTime)
+                end
+            end
+        end
+        wait(2)
     end
 end
 
@@ -302,5 +354,23 @@ local statButton = miscTab:Button({
                 },
             })
         end
+    end
+})
+local autoStart = expeditionTab:Toggle({
+    Title = "Auto Start",
+    Type = "Checkbox",
+    Default = false,
+    Callback = function(state) 
+        autoStartExpeditionEnabled = state
+        if autoStartExpeditionEnabled then spawn(startExpeditionLoop) end
+    end
+})
+local autoStart = expeditionTab:Toggle({
+    Title = "Auto Claim",
+    Type = "Checkbox",
+    Default = false,
+    Callback = function(state) 
+        autoClaimExpeditionEnabled = state
+        if autoClaimExpeditionEnabled then spawn(claimExpeditionLoop) end
     end
 })
