@@ -33,7 +33,7 @@ local Tab = Window:Tab({
     Locked = false,
 })
 local expeditionTab = Window:Tab({
-    Title = "Main",
+    Title = "Expedition",
     Icon = "compass",
     Locked = false,
 })
@@ -176,11 +176,13 @@ local function startExpeditionLoop()
 
                 if not timeLeft then
                     local newTime = StartExpedition:InvokeServer(layout)
-                    v_u_30(expeditionFrame, newTime)
+                    if v_u_30 then
+                        v_u_30(expeditionFrame, newTime)
+                    end
                 end
             end
         end
-        wait(2)
+        wait(1)
     end
 end
 
@@ -196,11 +198,13 @@ local function claimExpeditionLoop()
                 if timeLeft and timeLeft <= 0 then
                     ClaimExpedition:FireServer(layout)
                     local newTime = StartExpedition:InvokeServer(layout)
-                    v_u_30(expeditionFrame, newTime)
+                    if v_u_30 then
+                        v_u_30(expeditionFrame, newTime)
+                    end
                 end
             end
         end
-        wait(2)
+        wait(1)
     end
 end
 
@@ -365,7 +369,7 @@ local autoStart = expeditionTab:Toggle({
         if autoStartExpeditionEnabled then spawn(startExpeditionLoop) end
     end
 })
-local autoStart = expeditionTab:Toggle({
+local autoClaim = expeditionTab:Toggle({
     Title = "Auto Claim",
     Type = "Checkbox",
     Default = false,
