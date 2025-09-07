@@ -15,10 +15,11 @@ local Window = WindUI:CreateWindow({
     Folder = "PucukHub",
     KeySystem = {
         Note = "Example Key System. With platoboost, etc.",
+        URL = "https://pandadevelopment.net/booster/cmf8xg4jv0808whrxwbd6xqfw",
         API = {
             { 
                 Type = "pandadevelopment",
-                ServiceId = cmf777q6p8mq3nzq3lkqydpxz,
+                ServiceId = pucukhub,
             },
         },
     },
