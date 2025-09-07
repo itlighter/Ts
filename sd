@@ -151,6 +151,20 @@ local function breakthroughLoop()
     end
 end
 
+local function getUpdateFunction()
+    for _, f in ipairs(getgc(true)) do
+        if type(f) == "function" and islclosure(f) then
+            local info = debug.getinfo(f)
+            if info and info.numparams == 2 and tostring(info.source):find("Expeditions") then
+                return f
+            end
+        end
+    end
+end
+
+local v_u_30 = getUpdateFunction()
+print("v_u_30 found:", v_u_30)
+
 local function startExpeditionLoop()
     while autoStartExpeditionEnabled do
         local expeditions = Remotes.GetExpeditionsInfo:InvokeServer()
@@ -162,6 +176,9 @@ local function startExpeditionLoop()
 
                 if not timeLeft then
                     local newTime = StartExpedition:InvokeServer(layout)
+                    if v_u_30 then
+                        v_u_30(expeditionFrame, newTime)
+                    end
                 end
             end
         end
@@ -181,6 +198,9 @@ local function claimExpeditionLoop()
                 if timeLeft and timeLeft <= 0 then
                     ClaimExpedition:FireServer(layout)
                     local newTime = StartExpedition:InvokeServer(layout)
+                    if v_u_30 then
+                        v_u_30(expeditionFrame, newTime)
+                    end
                 end
             end
         end
