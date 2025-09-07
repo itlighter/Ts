@@ -15,9 +15,8 @@ local Window = WindUI:CreateWindow({
     KeySystem = {
         API = {
             { 
-                Type = "platoboost",
-                ServiceId = 6141,
-                Secret = "95f14418-f337-4413-8cb5-c7bfcb8d2363",
+                Type = "pandadevelopment",
+                ServiceId = cmf777q6p8mq3nzq3lkqydpxz,
             },
         },
     },
