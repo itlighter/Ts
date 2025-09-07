@@ -13,6 +13,7 @@ local Window = WindUI:CreateWindow({
     Icon = "door-open",
     Author = "Pucuk",
     KeySystem = {
+        Note = "Example Key System. With platoboost, etc.",
         API = {
             { 
                 Type = "pandadevelopment",
